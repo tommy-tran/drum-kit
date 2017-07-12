@@ -60,10 +60,14 @@
 <script>
   var datakeys = [65, 83, 68, 70, 71, 72, 74, 75, 76];
   window.addEventListener('keydown', playSound);
+  window.addEventListener('keyup', removeTransitionOnKeyUp);
   datakeys.forEach(key => document.querySelector(`.key[data-key="${key}"`).addEventListener("click", playSound));
+  var delay = 10;
+
+  const keys = document.querySelectorAll('.key');
+  keys.forEach(key => key.addEventListener('transitionend', removeTransition));
 
   function playSound(e) {
-    console.log(e);
     var audio;
     var key;
 
@@ -73,7 +77,6 @@
     }
     else
     {
-      console.log(this);
       audio = document.querySelector(`audio[data-key="${this.getAttribute("data-key")}"]`);
       key = document.querySelector(`.key[data-key="${this.getAttribute("data-key")}"]`);
     }
@@ -84,12 +87,21 @@
     key.classList.add('playing');
   }
 
-  const keys = document.querySelectorAll('.key');
-  keys.forEach(key => key.addEventListener('transitionend', removeTransition));
-
   function removeTransition(e) {
     if (e.propertyName !== 'transform') return; // skip if it's not a transform
-    this.classList.remove('playing');
+    this.classList.remove('playing'); 
+  }
+
+
+
+  function removeTransitionOnKeyUp(e) {
+    key = document.querySelector(`.key[data-key="${e.keyCode}"]`);
+    try {
+      key.classList.remove('playing');
+    } catch(err) {
+      // Type error on load
+    }
+
   }
 </script>
 
